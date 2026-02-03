@@ -16,18 +16,10 @@ pipeline {
                 npm ci
                 npm run build
                 ls -la
+                grep "index.html" /build
+                npm test
                 '''
             }
         }
-        stage('Test') {
-            steps {
-            sh '''
-            grep "index.html" /build
-            npm test
-
-            '''
-            }
-
-        }
-    }
+     }
 }

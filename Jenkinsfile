@@ -20,7 +20,7 @@ pipeline {
             }
         }
         stage('Test') {
-            step {
+            steps {
             sh '''
             grep "index.html" /build
             npm test

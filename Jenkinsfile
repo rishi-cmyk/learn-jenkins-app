@@ -72,7 +72,7 @@ pipeline {
                 }
             }
         }
-        /*stage('Deploy'){
+        stage('Deploy'){
             agent{
                 docker{
                     image 'node:18-alpine'
@@ -89,6 +89,30 @@ pipeline {
                 '''
             }
             
-        }*/
+        }
+        stage('E2E') {
+            environment{
+                CI_ENVIRONMENT_URL = 'https://idyllic-chaja-4b08b9.netlify.app'
+            }
+            agent {
+                docker {
+                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                    reuseNode true
+                }
+            }
+
+            steps {
+                sh '''
+                    npx playwright test  --reporter=html
+                '''
+            }
+
+            post {
+                always {
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright Report', reportTitles: '', useWrapperFileDirectly: true])
+                }
+            }
+        }
+
     }
 }

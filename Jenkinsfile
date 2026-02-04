@@ -21,7 +21,6 @@ pipeline {
                     npm --version
                     npm ci
                     npm run build
-                    ls -la
                 '''
             }
         }
@@ -38,7 +37,6 @@ pipeline {
 
                     steps {
                         sh '''
-                            #test -f build/index.html
                             npm test
                         '''
                     }
@@ -74,7 +72,7 @@ pipeline {
                 }
             }
         }
-        stage('Deploy'){
+        /*stage('Deploy'){
             agent{
                 docker{
                     image 'node:18-alpine'
@@ -91,6 +89,6 @@ pipeline {
                 '''
             }
             
-        }
+        }*/
     }
 }

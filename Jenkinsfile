@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     stages {
-        /*
 
         stage('Build') {
             agent {
@@ -22,7 +21,6 @@ pipeline {
                 '''
             }
         }
-        */
 
         stage('Tests') {
             parallel {
@@ -42,7 +40,7 @@ pipeline {
                     }
                     post {
                         always {
-                            junit 'jest-results/junit.xml'
+                            junit 'tests-results/junit.xml'
                         }
                     }
                 }

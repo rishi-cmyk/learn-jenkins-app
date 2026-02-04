@@ -1,8 +1,8 @@
 pipeline {
     agent any
     environment{
-        NETLIFY_SITE_ID='ccfcc967-b439-4a2a-b7a2-3ff22e577fdc'
-        NETLIFY_AUTH_TOKEN=credentials{'netlify-jenkins'}
+        NETLIFY_SITE_ID = 'ccfcc967-b439-4a2a-b7a2-3ff22e577fdc'
+        NETLIFY_AUTH_TOKEN = credentials{'netlify-jenkins'}
     }
 
     stages {

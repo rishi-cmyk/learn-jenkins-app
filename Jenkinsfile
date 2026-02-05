@@ -9,7 +9,6 @@ pipeline {
 
 //Building the application
     stages {
-
         stage('Build') {
             agent {
                 docker {
@@ -50,7 +49,7 @@ pipeline {
                     }
                 }
 
-                stage('E2E') {
+                stage('E2E Build') {
                     agent {
                         docker {
                             image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
@@ -104,7 +103,7 @@ pipeline {
         }
 //E2E testing for stage
 
-        stage('E2E') {
+        stage('E2E Stage') {
             environment{
                 CI_ENVIRONMENT_URL = 'https://idyllic-chaja-4b08b9.netlify.app'
             }
@@ -156,7 +155,7 @@ pipeline {
             
         }
 //Testing after prod deployment
-        stage('E2E') {
+        stage('E2E Prod') {
             environment{
                 CI_ENVIRONMENT_URL = 'https://idyllic-chaja-4b08b9.netlify.app'
             }

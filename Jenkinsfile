@@ -4,6 +4,7 @@ pipeline {
     environment{
         NETLIFY_SITE_ID = 'ccfcc967-b439-4a2a-b7a2-3ff22e577fdc'
         NETLIFY_AUTH_TOKEN = credentials('netlify-jenkins')
+        REACT_APP_VERSION = "1.0.$BUILD_ID"
     }
 // Starting the pipeline with stages
 
@@ -92,20 +93,26 @@ pipeline {
             }
             steps{
                 sh '''
-                npm install netlify-cli@20.1.1
+                npm install netlify-cli@20.1.1 node-jq
                 node_modules/.bin/netlify --version
                 echo "Deploying to stagging. Site ID: $NETLIFY_SITE_ID"
                 node_modules/.bin/netlify status
-                node_modules/.bin/netlify deploy --dir=build
+                # it will pass the output to json file
+                node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json 
+                node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json 
                 '''
+                script{
+                    env.URL = sh(script: "node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json", returnStdout: true)
+                }
             }
+            // To pass the output to another stage we need to use script
             
         }
 //E2E testing for stage
 
         stage('E2E Stage') {
             environment{
-                CI_ENVIRONMENT_URL = 'https://idyllic-chaja-4b08b9.netlify.app'
+                CI_ENVIRONMENT_URL = "{$env.URL}"
             }
             agent {
                 docker {

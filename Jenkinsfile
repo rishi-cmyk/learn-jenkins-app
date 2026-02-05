@@ -78,7 +78,9 @@ pipeline {
 // Requires Approval Step before going to deploy
         stage('Aprpoval'){
             steps{
-                input : 'Ready for deployment to stagging environment?'
+                timeout(time: 1, unit: 'HOURS') {
+                    input 'Ready for deployment to stagging environment?'
+                    }
             }
         }
 // Deploying to stage
@@ -129,7 +131,10 @@ pipeline {
 //Approval before prod deployment
         stage('Aprpoval'){
             steps{
-                input : 'Ready for deployment to Prod environment?'
+                timeout(time: 1, unit: 'HOURS') {
+                    input 'Ready for deployment to Prod environment?'
+                    }
+                
             }
         }
         stage('Prod Deploy'){

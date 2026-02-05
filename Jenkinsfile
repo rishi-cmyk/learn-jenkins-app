@@ -4,7 +4,7 @@ pipeline {
     environment{
         NETLIFY_SITE_ID = 'ccfcc967-b439-4a2a-b7a2-3ff22e577fdc'
         NETLIFY_AUTH_TOKEN = credentials('netlify-jenkins')
-        REACT_APP_VERSION = "1.0.$BUILD_ID"
+        REACT_APP_VERSION = "1.0.${BUILD_ID}"
     }
 // Starting the pipeline with stages
 
@@ -112,7 +112,7 @@ pipeline {
 
         stage('E2E Stage') {
             environment{
-                CI_ENVIRONMENT_URL = "{$env.URL}"
+                CI_ENVIRONMENT_URL = "${env.URL}"
             }
             agent {
                 docker {

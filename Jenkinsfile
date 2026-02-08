@@ -9,7 +9,7 @@ pipeline {
 // Starting the pipeline with stages
 
 //Building the application
-    stages {
+   /* stages {
 
         stage('Build') {
             agent {
@@ -27,7 +27,7 @@ pipeline {
                     npm run build
                 '''
             }
-        }
+        }*/
 //Testing the Build: Parallel testing of Unit and E2E testing
         /*stage('Tests') {
             parallel {
@@ -76,13 +76,13 @@ pipeline {
             }
         }*/
 // Requires Approval Step before going to deploy
-        stage('Aprpoval For Stagging'){
+       /* stage('Aprpoval For Stagging'){
             steps{
                 timeout(time: 1, unit: 'HOURS') {
                     input 'Ready for deployment to stagging environment?'
                     }
             }
-        }
+        }*/
 // Deploying to stage
         /*stage('Stag Deploy'){
             agent{
@@ -119,7 +119,7 @@ pipeline {
                 sh '''
                 aws --version
                 # echo "Hello World!" > index.html
-                aws s3 cp -r build s3://jenkins-test-rishabh-bucket/build
+                aws s3 sync build/ s3://jenkins-test-rishabh-bucket/build
                 '''
     // some block
 }

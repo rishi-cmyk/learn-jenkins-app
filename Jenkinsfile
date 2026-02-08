@@ -9,9 +9,9 @@ pipeline {
 // Starting the pipeline with stages
 
 //Building the application
-   /* stages {
+    stages {
 
-        stage('Build') {
+        /*stage('Build') {
             agent {
                 docker {
                     image 'node:18-alpine'

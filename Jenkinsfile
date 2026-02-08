@@ -10,7 +10,25 @@ pipeline {
 
 //Building the application
     stages {
-        stage('Build') {
+        stage('AWS'){
+            agent{
+                docker{
+                    image: 'amazon/aws-cli'
+                    args "--entrypoint=''"
+                }
+            }
+            steps{
+                withCredentials([usernamePassword(credentialsId: 'aws', passwordVariable: 'export AWS_SECRET_ACCESS_KEY', usernameVariable: 'export AWS_ACCESS_KEY_ID')]) {
+                    sh '''
+                    aws --version
+                    echo "Hello S3!" > index.html
+                    aws s3 cp index.html s3://jenkins-test-rishabh-bucket/index.html
+                    '''
+    
+                }
+            }
+        }
+        /*stage('Build') {
             agent {
                 docker {
                     image 'node:18-alpine'
@@ -183,5 +201,5 @@ pipeline {
             }
         }
 
-    }
+    }*/
 }

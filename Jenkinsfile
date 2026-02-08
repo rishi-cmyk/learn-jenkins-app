@@ -10,25 +10,8 @@ pipeline {
 
 //Building the application
     stages {
-        stage('AWS'){
-            agent{
-                docker {
-                    image 'amazon/aws-cli'
-                    args "--entrypoint=''"
-                }
-            }
-            steps{
-               withCredentials([usernamePassword(credentialsId: 'aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
-                sh '''
-                aws --version
-                echo "Hello World!" > index.html
-                aws s3 cp index.html s3://jenkins-test-rishabh-bucket/index.html
-                '''
-    // some block
-}
-            }
-        }
-        /*stage('Build') {
+
+        stage('Build') {
             agent {
                 docker {
                     image 'node:18-alpine'
@@ -101,7 +84,7 @@ pipeline {
             }
         }
 // Deploying to stage
-        stage('Stag Deploy'){
+        /*stage('Stag Deploy'){
             agent{
                 docker{
                     image 'my-playwrite'
@@ -123,10 +106,28 @@ pipeline {
             }
             // To pass the output to another stage we need to use script
             
+        }*/
+                stage('AWS'){
+            agent{
+                docker {
+                    image 'amazon/aws-cli'
+                    args "--entrypoint=''"
+                }
+            }
+            steps{
+               withCredentials([usernamePassword(credentialsId: 'aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+                sh '''
+                aws --version
+                # echo "Hello World!" > index.html
+                aws s3 cp -r build s3://jenkins-test-rishabh-bucket/build
+                '''
+    // some block
+}
+            }
         }
 //E2E testing for stage
 
-        stage('E2E Stage') {
+       /* stage('E2E Stage') {
             environment{
                 CI_ENVIRONMENT_URL = "${env.URL}"
             }

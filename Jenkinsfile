@@ -15,7 +15,7 @@ pipeline {
                 sh 'docker build -t my-playwrite .'
             }
         }
-        stage('Build') {
+        /*stage('Build') {
             agent {
                 docker {
                     image 'node:18-alpine'
@@ -78,7 +78,7 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
 // Requires Approval Step before going to deploy
         stage('Aprpoval For Stagging'){
             steps{
@@ -99,7 +99,7 @@ pipeline {
                 sh '''
                 netlify --version
                 echo "Deploying to stagging. Site ID: $NETLIFY_SITE_ID"
-                nnetlify status
+                netlify status
                 # it will pass the output to json file
                 netlify deploy --dir=build --json > deploy-output.json 
                 node-jq -r '.deploy_url' deploy-output.json 

@@ -119,7 +119,7 @@ pipeline {
                 sh '''
                 aws --version
                 # echo "Hello World!" > index.html
-                aws s3 sync build/ s3://jenkins-test-rishabh-bucket/build
+                aws s3 sync build s3://jenkins-test-rishabh-bucket
                 '''
     // some block
 }

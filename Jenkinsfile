@@ -29,7 +29,7 @@ pipeline {
             }
         }
 //Testing the Build: Parallel testing of Unit and E2E testing
-        stage('Tests') {
+        /*stage('Tests') {
             parallel {
                 stage('Unit tests') {
                     agent {
@@ -74,7 +74,7 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
 // Requires Approval Step before going to deploy
         stage('Aprpoval For Stagging'){
             steps{

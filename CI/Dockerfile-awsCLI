@@ -1,4 +1,4 @@
 FROM amazon/aws-cli:latest
 
-RUN yum install -y jq docker \
-    && yum clean all
+RUN yum install -y jq curl \
+ && curl -fsSL https://get.docker.com | sh

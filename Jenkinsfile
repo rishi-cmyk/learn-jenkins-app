@@ -7,13 +7,15 @@ pipeline {
         NETLIFY_AUTH_TOKEN = credentials('netlify-jenkins')
         REACT_APP_VERSION = "1.0.${BUILD_ID}"
         AWS_DEFAULT_REGION = 'ap-south-1'
+        APP_NAME= 'myjenkinsapp'
+        AWS_ECR = '013046900819.dkr.ecr.ap-south-1.amazonaws.com'
     }
 
     // Starting the pipeline with stages
     stages {
 
         //Building the application
-        /*stage('Build') {
+        stage('Build') {
             agent {
                 docker {
                     image 'node:18-alpine'
@@ -29,20 +31,19 @@ pipeline {
                     npm run build
                 '''
             }
-        }*/
+        }
     //Deploying to AWS S3
         /*stage('AWS') {
             agent {
                 docker {
                     image 'my-awscli'
-                    args "-u root --entrypoint=''"
+                    args "--entrypoint=''"
                 }
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                     sh '''
                     aws --version
-                    yum install jg -y
                     # echo "Hello World!" > index.html
                     # aws s3 sync build s3://jenkins-test-rishabh-bucket
                     LATEST_TD_VERSION=$(aws ecs register-task-definition --cli-input-json file://aws/task-definition.json | jq '.taskDefinition.revision')
@@ -62,7 +63,11 @@ pipeline {
                 }
             }
             steps{
-                sh 'docker build -t myjenkinsapp .'
+                sh '''
+                    docker build -t $AWS_ECR/$APP_NAME:$REACT_APP_VERSION .
+                    aws ecr get-login-passowrd | docker login --username AWS --password-stdin $AWS_ECR
+                    docker push $AWS_ECR/$APP_NAME:$REACT_APP_VERSION
+                '''
             }
         }
 

@@ -35,18 +35,19 @@ pipeline {
             agent {
                 docker {
                     image 'amazon/aws-cli'
-                    args "--entrypoint=''"
+                    args "-u root --entrypoint=''"
                 }
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                     sh '''
                     aws --version
-                    sudo yum install jg -y
+                    yum install jg -y
                     # echo "Hello World!" > index.html
                     # aws s3 sync build s3://jenkins-test-rishabh-bucket
                     LATEST_TD_VERSION=$(aws ecs register-task-definition --cli-input-json file://aws/task-definition.json | jq '.taskDefinition.revision')
                     aws ecs update-service --cluster JenkinsApp --service JenkinsApp-container-task-service-2u9sddzw --task-definition JenkinsApp-container-task:$LATEST_TD_VERSION
+                    aws ecs wait services-stable --cluster JenkinsApp --service JenkinsApp-container-task-service-2u9sddzw
                     '''
                     // some block
                 }

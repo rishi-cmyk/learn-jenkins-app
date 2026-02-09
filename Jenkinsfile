@@ -64,9 +64,10 @@ pipeline {
             }
             steps{
                 sh '''
-                    amazon-linux-extras install docker
+                    dnf update -y
+                    dnf install -y docker
                     docker build -t $AWS_ECR/$APP_NAME:$REACT_APP_VERSION .
-                    aws ecr get-login-passowrd | docker login --username AWS --password-stdin $AWS_ECR
+                    aws ecr get-login-password | docker login --username AWS --password-stdin $AWS_ECR
                     docker push $AWS_ECR/$APP_NAME:$REACT_APP_VERSION
                 '''
             }

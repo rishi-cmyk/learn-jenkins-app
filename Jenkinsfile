@@ -45,6 +45,7 @@ pipeline {
                     # echo "Hello World!" > index.html
                     # aws s3 sync build s3://jenkins-test-rishabh-bucket
                     aws ecs register-task-definition --cli-input-json file://aws/task-definition.json
+                    aws ecs update-service --cluster JenkinsApp service arn:aws:ecs:ap-south-1:013046900819:service/JenkinsApp/JenkinsApp-container-task-service-2u9sddzw --task-definition JenkinsApp-container-task:2
                     '''
                     // some block
                 }

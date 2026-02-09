@@ -57,13 +57,14 @@ pipeline {
         stage('Docker Image'){
             agent{
                 docker{
-                    image 'my-awscli'
+                    image 'amazon/aws-cli'
                     reuseNode true
                     args "-u root -v /var/run/docker.sock:/var/run/docker.sock --entrypoint=''"
                 }
             }
             steps{
                 sh '''
+                    amazon-linux-extras install docker
                     docker build -t $AWS_ECR/$APP_NAME:$REACT_APP_VERSION .
                     aws ecr get-login-passowrd | docker login --username AWS --password-stdin $AWS_ECR
                     docker push $AWS_ECR/$APP_NAME:$REACT_APP_VERSION

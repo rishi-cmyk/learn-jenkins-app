@@ -31,7 +31,7 @@ pipeline {
             }
         }*/
     //Deploying to AWS S3
-        stage('AWS') {
+        /*stage('AWS') {
             agent {
                 docker {
                     image 'amazon/aws-cli'
@@ -51,6 +51,11 @@ pipeline {
                     '''
                     // some block
                 }
+            }
+        }*/
+        stage('Docker Image'){
+            steps{
+                sh 'docker build -t myjenkinsapp .'
             }
         }
 

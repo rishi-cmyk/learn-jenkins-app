@@ -54,7 +54,7 @@ pipeline {
                 }
             }
         }*/
-        stage('Docker Image'){
+        /*stage('Docker Image'){
             agent{
                 docker{
                     image 'amazon/aws-cli:latest'
@@ -69,7 +69,22 @@ pipeline {
                     docker push $AWS_ECR/$APP_NAME:$REACT_APP_VERSION
                 '''
             }
+        }*/
+        stage('Docker Image') {
+    agent any  // Use Jenkins host (which has Docker)
+    environment {
+        AWS_REGION = 'ap-south-1'
+    }
+    steps {
+        withAWS(credentials: 'aws-ecr-credentials') {
+            sh '''
+                aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 013046900819.dkr.ecr.ap-south-1.amazonaws.com
+                docker build -t 013046900819.dkr.ecr.ap-south-1.amazonaws.com/myjenkinsapp:$REACT_APP_VERSION .
+                docker push 013046900819.dkr.ecr.ap-south-1.amazonaws.com/myjenkinsapp:$REACT_APP_VERSION
+            '''
         }
+    }
+}
 
         //Testing the Build: Parallel testing of Unit and E2E testing
         /*stage('Tests') {

@@ -1,2 +1,3 @@
 FROM amazon/aws-cli
+RUN install -y docker-ce docker-ce-cli containerd.io
 RUN yum install jq -y

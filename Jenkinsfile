@@ -15,7 +15,7 @@ pipeline {
     stages {
 
         //Building the application
-        stage('Build') {
+        /*stage('Build') {
             agent {
                 docker {
                     image 'node:18-alpine'
@@ -31,7 +31,7 @@ pipeline {
                     npm run build
                 '''
             }
-        }
+        }*/
     //Deploying to AWS S3
         /*stage('AWS') {
             agent {
@@ -64,8 +64,6 @@ pipeline {
             }
             steps{
                 sh '''
-                    dnf update -y
-                    dnf install -y docker
                     docker build -t $AWS_ECR/$APP_NAME:$REACT_APP_VERSION .
                     aws ecr get-login-password | docker login --username AWS --password-stdin $AWS_ECR
                     docker push $AWS_ECR/$APP_NAME:$REACT_APP_VERSION

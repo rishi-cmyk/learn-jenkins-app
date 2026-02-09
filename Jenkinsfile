@@ -42,10 +42,11 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                     sh '''
                     aws --version
+                    sudo yum install jg -y
                     # echo "Hello World!" > index.html
                     # aws s3 sync build s3://jenkins-test-rishabh-bucket
-                    # aws ecs register-task-definition --cli-input-json file://aws/task-definition.json
-                    aws ecs update-service --cluster JenkinsApp --service JenkinsApp-container-task-service-2u9sddzw --task-definition JenkinsApp-container-task:2
+                    LATEST_TD_VERSION=$(aws ecs register-task-definition --cli-input-json file://aws/task-definition.json | jq '.taskDefinition.revision')
+                    aws ecs update-service --cluster JenkinsApp --service JenkinsApp-container-task-service-2u9sddzw --task-definition JenkinsApp-container-task:$LATEST_TD_VERSION
                     '''
                     // some block
                 }
@@ -126,7 +127,7 @@ pipeline {
                 '''
                 script {
                     env.URL = sh(script: "node-jq -r '.deploy_url' deploy-output.json", returnStdout: true)
-                }
+                }   
             }
             // To pass the output to another stage we need to use script
         }*/

@@ -1,16 +1,17 @@
 pipeline {
     agent any
-//Setting up environment varibales
-    environment{
+
+    //Setting up environment varibales
+    environment {
         NETLIFY_SITE_ID = 'ccfcc967-b439-4a2a-b7a2-3ff22e577fdc'
         NETLIFY_AUTH_TOKEN = credentials('netlify-jenkins')
         REACT_APP_VERSION = "1.0.${BUILD_ID}"
     }
-// Starting the pipeline with stages
 
-//Building the application
+    // Starting the pipeline with stages
     stages {
 
+        //Building the application
         /*stage('Build') {
             agent {
                 docker {
@@ -28,9 +29,31 @@ pipeline {
                 '''
             }
         }*/
-//Testing the Build: Parallel testing of Unit and E2E testing
+    //Deploying to AWS S3
+        stage('AWS') {
+            agent {
+                docker {
+                    image 'amazon/aws-cli'
+                    args "--entrypoint=''"
+                }
+            }
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+                    sh '''
+                    aws --version
+                    # echo "Hello World!" > index.html
+                    # aws s3 sync build s3://jenkins-test-rishabh-bucket
+                    aws ecs register-task-definition --cli-input-json file://aws/task-definition.json
+                    '''
+                    // some block
+                }
+            }
+        }
+
+        //Testing the Build: Parallel testing of Unit and E2E testing
         /*stage('Tests') {
             parallel {
+
                 stage('Unit tests') {
                     agent {
                         docker {
@@ -38,7 +61,6 @@ pipeline {
                             reuseNode true
                         }
                     }
-
                     steps {
                         sh '''
                             npm test
@@ -58,7 +80,6 @@ pipeline {
                             reuseNode true
                         }
                     }
-
                     steps {
                         sh '''
                             serve -s build &
@@ -66,7 +87,6 @@ pipeline {
                             npx playwright test  --reporter=html
                         '''
                     }
-
                     post {
                         always {
                             publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright Build Report', reportTitles: '', useWrapperFileDirectly: true])
@@ -75,23 +95,25 @@ pipeline {
                 }
             }
         }*/
-// Requires Approval Step before going to deploy
-       /* stage('Aprpoval For Stagging'){
-            steps{
+
+        // Requires Approval Step before going to deploy
+        /*stage('Aprpoval For Stagging') {
+            steps {
                 timeout(time: 1, unit: 'HOURS') {
                     input 'Ready for deployment to stagging environment?'
-                    }
+                }
             }
         }*/
-// Deploying to stage
-        /*stage('Stag Deploy'){
-            agent{
-                docker{
+
+        // Deploying to stage
+        /*stage('Stag Deploy') {
+            agent {
+                docker {
                     image 'my-playwrite'
                     reuseNode true
                 }
             }
-            steps{
+            steps {
                 sh '''
                 netlify --version
                 echo "Deploying to stagging. Site ID: $NETLIFY_SITE_ID"
@@ -100,35 +122,16 @@ pipeline {
                 netlify deploy --dir=build --json > deploy-output.json 
                 node-jq -r '.deploy_url' deploy-output.json 
                 '''
-                script{
+                script {
                     env.URL = sh(script: "node-jq -r '.deploy_url' deploy-output.json", returnStdout: true)
                 }
             }
             // To pass the output to another stage we need to use script
-            
         }*/
-                stage('AWS'){
-            agent{
-                docker {
-                    image 'amazon/aws-cli'
-                    args "--entrypoint=''"
-                }
-            }
-            steps{
-               withCredentials([usernamePassword(credentialsId: 'aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
-                sh '''
-                aws --version
-                # echo "Hello World!" > index.html
-                aws s3 sync build s3://jenkins-test-rishabh-bucket
-                '''
-    // some block
-}
-            }
-        }
-//E2E testing for stage
 
-       /* stage('E2E Stage') {
-            environment{
+        //E2E testing for stage
+        /*stage('E2E Stage') {
+            environment {
                 CI_ENVIRONMENT_URL = "${env.URL}"
             }
             agent {
@@ -137,37 +140,35 @@ pipeline {
                     reuseNode true
                 }
             }
-
             steps {
                 sh '''
                     npx playwright test  --reporter=html
                 '''
             }
-
             post {
                 always {
                     publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright Stage Report', reportTitles: '', useWrapperFileDirectly: true])
                 }
             }
-        }
+        }*/
 
-//Approval before prod deployment
-        stage('Aprpoval For Prod'){
-            steps{
+        //Approval before prod deployment
+        /*stage('Aprpoval For Prod') {
+            steps {
                 timeout(time: 1, unit: 'HOURS') {
                     input 'Ready for deployment to Prod environment?'
-                    }
-                
+                }
             }
-        }
-        stage('Prod Deploy'){
-            agent{
-                docker{
+        }*/
+
+        /*stage('Prod Deploy') {
+            agent {
+                docker {
                     image 'my-playwrite'
                     reuseNode true
                 }
             }
-            steps{
+            steps {
                 sh '''
                 netlify --version
                 echo "Deploying to stagging. Site ID: $NETLIFY_SITE_ID"
@@ -175,11 +176,11 @@ pipeline {
                 netlify deploy --dir=build --prod
                 '''
             }
-            
-        }
-//Testing after prod deployment
-        stage('E2E Prod') {
-            environment{
+        }*/
+
+        //Testing after prod deployment
+        /*stage('E2E Prod') {
+            environment {
                 CI_ENVIRONMENT_URL = 'https://idyllic-chaja-4b08b9.netlify.app'
             }
             agent {
@@ -188,13 +189,11 @@ pipeline {
                     reuseNode true
                 }
             }
-
             steps {
                 sh '''
                     npx playwright test  --reporter=html
                 '''
             }
-
             post {
                 always {
                     publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright Prod Report', reportTitles: '', useWrapperFileDirectly: true])
